@@ -1,0 +1,74 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SocialBoost AI API",
+    "version": "0.2.0",
+    "description": "AI-powered social post generation API with usage limits, subscriptions, and Stripe webhook support."
+  },
+  "servers": [{ "url": "http://localhost:3001" }],
+  "paths": {
+    "/health": { "get": { "summary": "Service health", "responses": { "200": { "description": "OK" } } } },
+    "/openapi.json": { "get": { "summary": "OpenAPI spec", "responses": { "200": { "description": "OpenAPI JSON" } } } },
+    "/api/me": { "get": { "summary": "Current user, tier, subscription, and usage", "responses": { "200": { "description": "Account state" } } } },
+    "/api/generate-posts": {
+      "post": {
+        "summary": "Generate a social media post",
+        "parameters": [
+          { "name": "x-user-id", "in": "header", "schema": { "type": "string" } },
+          { "name": "x-api-key", "in": "header", "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GeneratePostRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Generated post" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized in production when API_SECRET is configured" },
+          "402": { "description": "Monthly limit reached" },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+    "/api/usage": { "get": { "summary": "Monthly usage", "responses": { "200": { "description": "Usage state" } } } },
+    "/api/generations": { "get": { "summary": "Recent generated posts", "responses": { "200": { "description": "Generations" } } } },
+    "/api/plans": { "get": { "summary": "Plans", "responses": { "200": { "description": "Plans" } } } },
+    "/api/upgrade": {
+      "post": {
+        "summary": "Create Stripe Checkout session",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["plan"], "properties": { "plan": { "enum": ["starter", "pro"] } } } } }
+        },
+        "responses": { "200": { "description": "Checkout URL" }, "503": { "description": "Stripe not configured" } }
+      }
+    },
+    "/api/webhooks/stripe": {
+      "post": {
+        "summary": "Stripe webhook receiver",
+        "responses": { "200": { "description": "Webhook accepted" }, "503": { "description": "Webhook not configured" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GeneratePostRequest": {
+        "type": "object",
+        "required": ["productName", "description"],
+        "properties": {
+          "productName": { "type": "string", "minLength": 2, "maxLength": 90 },
+          "description": { "type": "string", "minLength": 10, "maxLength": 1200 },
+          "platform": { "enum": ["instagram", "tiktok", "linkedin"], "default": "instagram" },
+          "userTier": { "enum": ["free", "starter", "pro"] },
+          "imageNotes": { "type": "string", "maxLength": 600 },
+          "tone": { "enum": ["friendly", "premium", "playful", "expert"], "default": "friendly" },
+          "language": { "enum": ["tr", "en"], "default": "tr" }
+        }
+      }
+    }
+  }
+}

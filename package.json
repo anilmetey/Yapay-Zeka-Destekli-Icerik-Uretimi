@@ -1,0 +1,10 @@
+{
+  "name": "socialboost-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd socialboost-api && npm run dev",
+    "build": "cd socialboost-api && npm run build:frontend",
+    "start": "cd socialboost-api && npm start"
+  }
+}
