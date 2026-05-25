@@ -1,4 +1,4 @@
-# Yapay-Zeka-Destekli-erik-retimi
+# Yapay-Zeka-Destekli-Icerik-Uretimi
 
 Sosyal medya içeriklerinizi saniyeler içinde hazırlayın! SocialBoost; Metin, Görsel, Ses ve Video üretimini tek bir modern "Glassmorphism" arayüzde buluşturan çoklu medya (multimodal) yapay zeka SaaS platformudur.
 
